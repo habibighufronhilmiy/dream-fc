@@ -914,7 +914,7 @@ const app = createApp({
     }
   },
   methods: {
-    formatNumber(n) { if(!n&&n!==0) return '0'; if(n===Infinity) return '&#8734;'; return Number(n).toLocaleString('id-ID'); },
+    formatNumber(n) { if(!n&&n!==0) return '0'; if(n===Infinity) return '\u221E'; return Number(n).toLocaleString('id-ID'); },
     calculatePrice(r) { if(r>=94) return Math.floor(Math.random()*71)+180; if(r>=87) return Math.floor(Math.random()*71)+80; return Math.floor(Math.random()*41)+10; },
     posColor(pos) {
       const c={GK:'bg-yellow-600/50 text-yellow-200',DF:'bg-orange-600/50 text-orange-200',MD:'bg-cyan-600/50 text-cyan-200',FW:'bg-green-600/50 text-green-200'};
