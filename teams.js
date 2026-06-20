@@ -298,7 +298,7 @@
               {id:'psg26_4',name:'Nuno Mendes',position:'DF',rating:87},
               {id:'psg26_5',name:'Vitinha',position:'MD',rating:89},
               {id:'psg26_6',name:'Joao Neves',position:'MD',rating:87},
-              {id:'psg26_7',name':'Warren Zaire-Emery',position:'MD',rating:86},
+              {id:'psg26_7',name:'Warren Zaire-Emery',position:'MD',rating:86},
               {id:'psg26_8',name:'O. Dembele',position:'FW',rating:90},
               {id:'psg26_9',name:'K. Kvaratskhelia',position:'FW',rating:89},
               {id:'psg26_10',name:'B. Barcola',position:'FW',rating:86}
@@ -442,7 +442,7 @@
               {id:'atm26_5',name:'R. De Paul',position:'MD',rating:84},
               {id:'atm26_6',name:'P. Barrios',position:'MD',rating:82},
               {id:'atm26_7',name:'G. Simeone',position:'DF',rating:80},
-              {id:'atm26_8',name':'Alex Baena',position:'MD',rating:85},
+              {id:'atm26_8',name:'Alex Baena',position:'MD',rating:85},
               {id:'atm26_9',name:'S. Lino',position:'FW',rating:82},
               {id:'atm26_10',name:'R. Riquelme',position:'MD',rating:81}
             ]},
