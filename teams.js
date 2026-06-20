@@ -459,6 +459,58 @@
               {id:'tot26_9',name:'J. Gray',position:'MD',rating:78},
               {id:'tot26_10',name:'A. Dragusin',position:'DF',rating:81}
             ]},
+            "Borussia Dortmund 2026": {era:"Modern (2000-2026)",league:"Bundesliga",players:[
+              {id:'bvb26_0',name:'G. Kobel',position:'GK',rating:87},
+              {id:'bvb26_1',name:'N. Schlotterbeck',position:'DF',rating:86},
+              {id:'bvb26_2',name:'W. Anton',position:'DF',rating:84},
+              {id:'bvb26_3',name:'J. Ryerson',position:'DF',rating:80},
+              {id:'bvb26_4',name:'R. Bensebaini',position:'DF',rating:81},
+              {id:'bvb26_5',name:'E. Can',position:'MD',rating:82},
+              {id:'bvb26_6',name:'J. Brandt',position:'MD',rating:85},
+              {id:'bvb26_7',name:'M. Sabitzer',position:'MD',rating:83},
+              {id:'bvb26_8',name:'K. Adeyemi',position:'FW',rating:83},
+              {id:'bvb26_9',name:'S. Guirassy',position:'FW',rating:87},
+              {id:'bvb26_10',name:'J. Bynoe-Gittens',position:'FW',rating:82}
+            ]},
+            "Napoli 2026": {era:"Modern (2000-2026)",league:"Serie A",players:[
+              {id:'nap26_0',name:'A. Meret',position:'GK',rating:83},
+              {id:'nap26_1',name:'G. Di Lorenzo',position:'DF',rating:84},
+              {id:'nap26_2',name:'A. Rrahmani',position:'DF',rating:83},
+              {id:'nap26_3',name:'M. Olivera',position:'DF',rating:80},
+              {id:'nap26_4',name:'S. McTominay',position:'MD',rating:85},
+              {id:'nap26_5',name:'S. Lobotka',position:'MD',rating:84},
+              {id:'nap26_6',name:'K. De Bruyne',position:'MD',rating:87},
+              {id:'nap26_7',name:'M. Politano',position:'FW',rating:82},
+              {id:'nap26_8',name:'R. Lukaku',position:'FW',rating:84},
+              {id:'nap26_9',name:'G. Raspadori',position:'FW',rating:82},
+              {id:'nap26_10',name:'D. Neres',position:'FW',rating:82}
+            ]},
+            "Newcastle United 2026": {era:"Modern (2000-2026)",league:"Premier League",players:[
+              {id:'new26_0',name:'Bruno Guimaraes',position:'MD',rating:87},
+              {id:'new26_1',name:'S. Tonali',position:'MD',rating:86},
+              {id:'new26_2',name:'N. Pope',position:'GK',rating:84},
+              {id:'new26_3',name:'S. Botman',position:'DF',rating:85},
+              {id:'new26_4',name:'T. Livramento',position:'DF',rating:82},
+              {id:'new26_5',name:'K. Trippier',position:'DF',rating:83},
+              {id:'new26_6',name:'L. Hall',position:'DF',rating:80},
+              {id:'new26_7',name:'J. Willock',position:'MD',rating:81},
+              {id:'new26_8',name:'A. Isak',position:'FW',rating:89},
+              {id:'new26_9',name:'H. Barnes',position:'FW',rating:83},
+              {id:'new26_10',name:'M. Almiron',position:'FW',rating:80}
+            ]},
+            "Aston Villa 2026": {era:"Modern (2000-2026)",league:"Premier League",players:[
+              {id:'avl26_0',name:'E. Martinez',position:'GK',rating:86},
+              {id:'avl26_1',name:'P. Torres',position:'DF',rating:85},
+              {id:'avl26_2',name:'E. Konsa',position:'DF',rating:83},
+              {id:'avl26_3',name:'L. Digne',position:'DF',rating:82},
+              {id:'avl26_4',name:'Y. Tielemans',position:'MD',rating:85},
+              {id:'avl26_5',name:'J. McGinn',position:'MD',rating:84},
+              {id:'avl26_6',name:'B. Kamara',position:'MD',rating:83},
+              {id:'avl26_7',name:'M. Rogers',position:'MD',rating:82},
+              {id:'avl26_8',name:'O. Watkins',position:'FW',rating:86},
+              {id:'avl26_9',name:'L. Bailey',position:'FW',rating:84},
+              {id:'avl26_10',name:'J. Duran',position:'FW',rating:81}
+            ]},
             "Tottenham 2019": {era:"Modern (2000-2026)",league:"Premier League",players:[
               {id:'tot1',name:'H. Lloris',position:'GK',rating:88},{id:'tot2',name:'K. Trippier',position:'DF',rating:84},{id:'tot3',name:'T. Alderweireld',position:'DF',rating:87},{id:'tot4',name:'J. Vertonghen',position:'DF',rating:86},{id:'tot5',name:'D. Rose',position:'DF',rating:83},{id:'tot6',name:'M. Sissoko',position:'MD',rating:82},{id:'tot7',name:'H. Winks',position:'MD',rating:81},{id:'tot8',name:'C. Eriksen',position:'MD',rating:90},{id:'tot9',name:'Son Heung-min',position:'FW',rating:89},{id:'tot10',name:'H. Kane',position:'FW',rating:91},{id:'tot11',name:'Lucas Moura',position:'FW',rating:83}
             ]},

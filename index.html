@@ -83,6 +83,13 @@
       border-color:rgba(0,255,100,0.5);
     }
     .player-slot .pos-badge { font-size:8px; font-weight:700; padding:1px 4px; border-radius:3px; background:rgba(255,255,255,0.15); }
+    .player-slot.selected { border-color:#ffd700; box-shadow:0 0 15px rgba(255,215,0,0.6), inset 0 0 15px rgba(255,215,0,0.2); cursor:pointer; }
+    .player-slot.drag-over { border-color:#00ff88; box-shadow:0 0 15px rgba(0,255,136,0.6); }
+    .player-slot.dragging { opacity:0.4; }
+    .player-slot.filled { cursor:pointer; }
+    .pos-filter-btn { padding:4px 12px; border-radius:999px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); }
+    .pos-filter-btn:hover { transform:scale(1.05); }
+    .pos-filter-btn.active { background:#ffd700; color:#1a1a2e; border-color:#ffd700; }
 
     .commentary-box {
       background:#0a0a0a; border:1px solid #333;
@@ -383,6 +390,10 @@
                   </select>
                   <button @click="onlineMode && !canInteract ? null : autoDraft" class="btn-reroll text-xs py-1.5 px-3" :disabled="currentSquadLength>=formationTotalSlots || (onlineMode && !canInteract)">&#9889; Auto Draft</button>
                 </div>
+                <div class="flex flex-wrap items-center gap-1 mb-2">
+                  <span class="text-xs text-gray-400 mr-1">Pilih Posisi:</span>
+                  <button v-for="pos in ['all','GK','DF','MD','FW']" :key="pos" @click="selectGachaPos(pos)" class="pos-filter-btn" :class="{'active':selectedGachaPos===pos}" :style="pos!=='all'?{borderColor:{GK:'#eab308',DF:'#f97316',MD:'#06b6d4',FW:'#22c55e'}[pos]}:{}">{{ pos==='all'?'Semua':pos }}</button>
+                </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                   <div v-for="player in filteredGachaPlayers" :key="player.id" @click="openPlayerDetail(player)" class="bg-gray-800/60 rounded-lg p-2 text-xs border border-gray-700/50 card-glow cursor-pointer" :class="{'border-red-500/50 bg-red-900/20': isPlayerLocked(player), 'border-green-500/30 bg-green-900/20': isPlayerDrafted(player)}">
                     <div class="font-bold text-white truncate">{{ player.name }}</div>
@@ -392,7 +403,7 @@
                       <span class="text-gray-400 ml-auto">&euro;{{ player.marketValue }}M</span>
                     </div>
                     <button @click="onlineMode && !canInteract ? null : draftPlayer(player)" :disabled="isPlayerLocked(player) || isPlayerDrafted(player) || !isPositionAvailable(player.position) || (onlineMode && !canInteract)" class="mt-1 w-full text-xs py-1 px-2 rounded" :class="isPlayerLocked(player)?'bg-red-600/50 text-red-300 cursor-not-allowed':(isPlayerDrafted(player)?'bg-green-700/50 text-green-300 cursor-not-allowed':(!isPositionAvailable(player.position)?'bg-gray-700/50 text-gray-500 cursor-not-allowed':'btn-select'))">
-                      {{ isPlayerDrafted(player)?'&#10003; Terpilih':(isPlayerLocked(player)?'&#128274; Mahal':(!isPositionAvailable(player.position)?'&#128196; Penuh':'Pilih')) }}
+                      {{ isPlayerDrafted(player)?'&#10003; Terpilih':(isPlayerLocked(player)?'&#128274; Mahal':(!isPositionAvailable(player.position)?'&#128196; Penuh':'Pilih '+player.position)) }}
                     </button>
                   </div>
                 </div>
@@ -410,28 +421,28 @@
                 <div class="text-center text-white text-xs font-bold mb-1">{{ formationLabel }}</div>
                 <div class="flex-1 flex flex-col gap-0.5">
                   <div class="flex-1 flex items-end justify-center gap-1 pb-0.5">
-                    <div v-for="slot in currentFormation.fw" :key="'fw'+slot" class="player-slot" :style="{width: Math.min(90/currentFormation.fw,30)+'%'}">
+                    <div v-for="slot in currentFormation.fw" :key="'fw'+slot" class="player-slot" :class="{'selected':isSelectedSlot('FW',slot-1), 'filled':getPlayerInSlot('FW',slot-1), 'drag-over':dragOverSlot==='FW'+(slot-1)}" :style="{width: Math.min(90/currentFormation.fw,30)+'%'}" @click="selectGachaPos('FW')" draggable="true" @dragstart="startDrag('FW',slot-1)" @dragover.prevent="dragOverSlot='FW'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('FW',slot-1)">
                       <div v-if="getPlayerInSlot('FW',slot-1)" class="text-green-300 font-bold text-[10px] leading-tight truncate w-full">{{ getPlayerInSlot('FW',slot-1).name }}</div>
                       <div v-else class="text-gray-600 text-[9px]">FW</div>
                       <div v-if="getPlayerInSlot('FW',slot-1)" class="pos-badge mt-0.5">{{ getPlayerInSlot('FW',slot-1).rating }}</div>
                     </div>
                   </div>
                   <div class="flex-1 flex items-center justify-center gap-1">
-                    <div v-for="slot in currentFormation.md" :key="'md'+slot" class="player-slot" :style="{width: Math.min(90/currentFormation.md,30)+'%'}">
+                    <div v-for="slot in currentFormation.md" :key="'md'+slot" class="player-slot" :class="{'selected':isSelectedSlot('MD',slot-1), 'filled':getPlayerInSlot('MD',slot-1), 'drag-over':dragOverSlot==='MD'+(slot-1)}" :style="{width: Math.min(90/currentFormation.md,30)+'%'}" @click="selectGachaPos('MD')" draggable="true" @dragstart="startDrag('MD',slot-1)" @dragover.prevent="dragOverSlot='MD'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('MD',slot-1)">
                       <div v-if="getPlayerInSlot('MD',slot-1)" class="text-cyan-300 font-bold text-[10px] leading-tight truncate w-full">{{ getPlayerInSlot('MD',slot-1).name }}</div>
                       <div v-else class="text-gray-600 text-[9px]">MD</div>
                       <div v-if="getPlayerInSlot('MD',slot-1)" class="pos-badge mt-0.5">{{ getPlayerInSlot('MD',slot-1).rating }}</div>
                     </div>
                   </div>
                   <div class="flex-1 flex items-start justify-center gap-1 pb-0.5">
-                    <div v-for="slot in currentFormation.df" :key="'df'+slot" class="player-slot" :style="{width: Math.min(90/currentFormation.df,24)+'%'}">
+                    <div v-for="slot in currentFormation.df" :key="'df'+slot" class="player-slot" :class="{'selected':isSelectedSlot('DF',slot-1), 'filled':getPlayerInSlot('DF',slot-1), 'drag-over':dragOverSlot==='DF'+(slot-1)}" :style="{width: Math.min(90/currentFormation.df,24)+'%'}" @click="selectGachaPos('DF')" draggable="true" @dragstart="startDrag('DF',slot-1)" @dragover.prevent="dragOverSlot='DF'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('DF',slot-1)">
                       <div v-if="getPlayerInSlot('DF',slot-1)" class="text-orange-300 font-bold text-[10px] leading-tight truncate w-full">{{ getPlayerInSlot('DF',slot-1).name }}</div>
                       <div v-else class="text-gray-600 text-[9px]">DF</div>
                       <div v-if="getPlayerInSlot('DF',slot-1)" class="pos-badge mt-0.5">{{ getPlayerInSlot('DF',slot-1).rating }}</div>
                     </div>
                   </div>
                   <div class="flex justify-center">
-                    <div class="player-slot w-[30%]">
+                    <div class="player-slot w-[30%]" :class="{'selected':isSelectedSlot('GK',0), 'filled':getPlayerInSlot('GK',0)}" @click="selectGachaPos('GK')">
                       <div v-if="getPlayerInSlot('GK',0)" class="text-yellow-300 font-bold text-[10px] leading-tight truncate w-full">{{ getPlayerInSlot('GK',0).name }}</div>
                       <div v-else class="text-gray-600 text-[9px]">GK</div>
                       <div v-if="getPlayerInSlot('GK',0)" class="pos-badge mt-0.5">{{ getPlayerInSlot('GK',0).rating }}</div>
@@ -444,6 +455,9 @@
                 <span class="text-orange-400">{{ positionCount('DF') }}/{{ currentFormation.df }} DF</span> |
                 <span class="text-cyan-400">{{ positionCount('MD') }}/{{ currentFormation.md }} MD</span> |
                 <span class="text-green-400">{{ positionCount('FW') }}/{{ currentFormation.fw }} FW</span>
+              </div>
+              <div v-if="selectedGachaPos!=='all'" class="mt-1 text-center">
+                <button @click="selectedGachaPos='all'" class="text-xs text-gray-400 hover:text-white underline">&#10005; Batal pilih posisi</button>
               </div>
             </div>
           </div>
@@ -714,6 +728,9 @@ const app = createApp({
       selectedFormation: '4-3-3',
       customFormationMode: false,
       customFormation: { df:4, md:3, fw:3 },
+      selectedGachaPos: 'all',
+      draggedSlot: null,
+      dragOverSlot: null,
       selectedContinent: 'all',
       fixtures: [],
       standings: [],
@@ -773,6 +790,9 @@ const app = createApp({
     filteredGachaPlayers() {
       if(!this.currentGachaTeam) return [];
       let players = [...this.currentGachaTeam.players];
+      if(this.selectedGachaPos!=='all' && this.showTeamResult) {
+        players = players.filter(p => p.position === this.selectedGachaPos);
+      }
       if(this.searchQuery) {
         const q = this.searchQuery.toLowerCase();
         players = players.filter(p => p.name.toLowerCase().includes(q));
@@ -932,6 +952,38 @@ const app = createApp({
       if(pos==='FW') return count<this.currentFormation.fw;
       return false;
     },
+    selectGachaPos(pos) {
+      if(this.onlineMode && !this.canInteract) return;
+      this.selectedGachaPos = pos;
+    },
+    isSelectedSlot(pos, index) {
+      return this.selectedGachaPos === pos;
+    },
+    startDrag(pos, index) {
+      const player = this.getPlayerInSlot(pos, index);
+      if(!player) return;
+      this.draggedSlot = {pos, index};
+    },
+    dropPlayer(pos, index) {
+      if(!this.draggedSlot) return;
+      const fromPos = this.draggedSlot.pos;
+      const fromIndex = this.draggedSlot.index;
+      this.draggedSlot = null;
+      this.dragOverSlot = null;
+      if(fromPos !== pos) return;
+      const sq = [...(this.squads[this.currentPlayerIndex]||[])];
+      const posPlayers = sq.filter(p=>p.position===pos);
+      if(fromIndex>=posPlayers.length || index>=posPlayers.length) return;
+      if(fromIndex===index) return;
+      const squadIdx = sq.reduce((acc,p,i)=>{
+        if(p.position===pos) acc.push(i);
+        return acc;
+      }, []);
+      [sq[squadIdx[fromIndex]], sq[squadIdx[index]]] = [sq[squadIdx[index]], sq[squadIdx[fromIndex]]];
+      this.squads[this.currentPlayerIndex] = sq;
+      this.saveToStorage();
+      if(this.onlineMode && this.isHost) this.broadcastState();
+    },
     selectFormation(key) { this.customFormationMode=false; this.selectedFormation=key; },
     toggleCustomFormation() { this.customFormationMode=!this.customFormationMode; },
     adjustCustom(pos,delta) {
@@ -983,7 +1035,7 @@ const app = createApp({
         teams = teams.filter(t=>t.continent.toLowerCase().replace(/\s/g,'_')===key);
       }
       if(teams.length===0) return;
-      this.isAnimating=true; this.showTeamResult=false; this.currentGachaTeam=null;
+      this.isAnimating=true; this.showTeamResult=false; this.currentGachaTeam=null; this.selectedGachaPos='all';
       setTimeout(()=>{
         const picked = teams[Math.floor(Math.random()*teams.length)];
         this.currentGachaTeam = {...picked, players: picked.players.map(p=>({...p,marketValue:this.calculatePrice(p.rating)}))};
@@ -1000,9 +1052,9 @@ const app = createApp({
         this.rerollCount--;
         return;
       }
-      this.rerollCount--; this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false;
+      this.rerollCount--; this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false; this.selectedGachaPos='all';
     },
-    cancelTeam() { this.showTeamResult=false; this.currentGachaTeam=null; },
+    cancelTeam() { this.showTeamResult=false; this.currentGachaTeam=null; this.selectedGachaPos='all'; },
     openPlayerDetail(player) { this.selectedPlayer=player; this.showPlayerDetail=true; },
     closePlayerDetail() { this.selectedPlayer=null; this.showPlayerDetail=false; },
     getPlayerStat(key) {
@@ -1053,12 +1105,12 @@ const app = createApp({
       if(this.isPlayerLocked(player)||this.isPlayerDrafted(player)||!this.isPositionAvailable(player.position)) return;
       if(this.onlineMode && !this.isHost) {
         this.sendToHost({type:'draft', player:{...player}, playerIndex:this.currentPlayerIndex});
-        // optimistic local update
         const sq = [...(this.squads[this.currentPlayerIndex]||[])];
         if(sq.length<this.formationTotalSlots) sq.push({...player});
         this.squads[this.currentPlayerIndex]=sq;
         this.showTeamResult = false;
         this.currentGachaTeam = null;
+        this.selectedGachaPos = 'all';
         return;
       }
       const sq = [...(this.squads[this.currentPlayerIndex]||[])];
@@ -1069,6 +1121,7 @@ const app = createApp({
       if(this.onlineMode && this.isHost) this.broadcastState();
       this.showTeamResult = false;
       this.currentGachaTeam = null;
+      this.selectedGachaPos = 'all';
     },
     nextPlayer() {
       if(this.onlineMode && !this.isHost) {
@@ -1079,7 +1132,7 @@ const app = createApp({
       if(next<this.playerNames.length) {
         this.currentPlayerIndex=next; this.rerollCount=3;
         this.currentGachaTeam=null; this.showTeamResult=false; this.isAnimating=false;
-        this.searchQuery=''; this.sortBy='default'; this.saveToStorage();
+        this.searchQuery=''; this.sortBy='default'; this.selectedGachaPos='all'; this.saveToStorage();
       } else { this.currentState='tournament'; this.saveToStorage(); }
       if(this.onlineMode && this.isHost) this.broadcastState();
     },
