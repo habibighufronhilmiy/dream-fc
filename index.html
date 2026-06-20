@@ -229,7 +229,7 @@
           <div v-if="onlineMode && isHost" class="mb-4 p-3 bg-green-900/30 rounded-lg border border-green-500/30">
             <div class="text-sm text-green-400 font-bold">&#9679; Room: {{ roomCode }}</div>
             <div class="text-xs text-gray-400">Bagikan kode ini ke temanmu. Terhubung: {{ conns.length }} pemain</div>
-            <div class="text-xs text-cyan-400 mt-1" v-for="(c,i) in conns" :key="i">&#9679; {{ playerNames[i+1]||'Pemain '+(i+2) }}</div>
+            <div class="text-xs text-cyan-400 mt-1" v-for="(c,i) in conns" :key="i">&#9679; {{ playerNames[playerNames.length-conns.length+i]||'Pemain '+(i+2) }}</div>
           </div>
           <div v-if="onlineMode && !isHost" class="mb-4 p-3 bg-cyan-900/30 rounded-lg border border-cyan-500/30">
             <div class="text-sm text-cyan-400 font-bold" v-if="isConnected">&#9679; Tergabung di Room {{ roomCode }}</div>
@@ -1018,10 +1018,16 @@ const app = createApp({
       this.gachaHistory={}; this.currentState='gacha';
       this.selectedContinent='all'; this.customFormationMode=false; this.selectedFormation='4-3-3';
       this.saveToStorage();
-      if(this.onlineMode && this.isHost) this.broadcastState();
+      if(this.onlineMode && this.isHost) {
+        for(let i=0;i<this.conns.length;i++) {
+          try{this.conns[i].send({type:'assigned', playerIndex:i+1});}catch(e){}
+        }
+        this.broadcastState();
+      }
     },
-    gacha() {
+    gacha(isReroll) {
       if(this.isAnimating) return;
+      if(!isReroll) this.rerollCount = 3;
       if(this.onlineMode && !this.isHost) {
         this.sendToHost({type:'gacha', continent:this.selectedContinent});
         this.isAnimating=true; this.showTeamResult=false; this.currentGachaTeam=null;
@@ -1051,13 +1057,15 @@ const app = createApp({
     rerollTeam() {
       if(this.rerollCount<=0) return;
       if(this.onlineMode && !this.isHost) {
-        this.sendToHost({type:'reroll', count:this.rerollCount-1});
+        this.sendToHost({type:'reroll'});
         this.rerollCount--;
         this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=true;
         setTimeout(()=>{ this.isAnimating=false; }, 2000);
         return;
       }
       this.rerollCount--; this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false; this.selectedGachaPos='all';
+      if(this.onlineMode && this.isHost) this.broadcastState();
+      this.gacha(true);
     },
     cancelTeam() { this.showTeamResult=false; this.currentGachaTeam=null; this.selectedGachaPos='all'; },
     openPlayerDetail(player) { this.selectedPlayer=player; this.showPlayerDetail=true; },
@@ -1375,9 +1383,9 @@ const app = createApp({
         this.gacha();
       }
       if(data.type==='reroll') {
-        this.rerollCount = data.count;
+        this.rerollCount--;
         this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false;
-        this.gacha();
+        this.gacha(true);
       }
       if(data.type==='next-player') {
         this.nextPlayer();
@@ -1435,6 +1443,9 @@ const app = createApp({
       this.groupCount = state.groupCount||2;
       this.gachaHistory = state.gachaHistory||{};
       this.selectedContinent = state.selectedContinent||'all';
+      if(!this.isHost && this.myPlayerIndex >= this.playerNames.length && this.playerNames.length > 0) {
+        this.myPlayerIndex = this.playerNames.length - 1;
+      }
     },
     sendToHost(data) {
       for(const conn of this.conns) { try{conn.send(data);}catch(e){} }
