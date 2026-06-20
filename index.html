@@ -1022,10 +1022,9 @@ const app = createApp({
     },
     gacha() {
       if(this.isAnimating) return;
-      this.rerollCount = 3;
       if(this.onlineMode && !this.isHost) {
-        this.sendToHost({type:'gacha', continent:this.selectedContinent, rerollCount:this.rerollCount});
-        this.isAnimating=true;
+        this.sendToHost({type:'gacha', continent:this.selectedContinent});
+        this.isAnimating=true; this.showTeamResult=false; this.currentGachaTeam=null;
         setTimeout(()=>{ this.isAnimating=false; }, 2000);
         return;
       }
@@ -1034,7 +1033,11 @@ const app = createApp({
         const key = this.selectedContinent;
         teams = teams.filter(t=>t.continent.toLowerCase().replace(/\s/g,'_')===key);
       }
-      if(teams.length===0) return;
+      if(teams.length===0) {
+        this.isAnimating=false;
+        if(this.onlineMode && this.isHost) this.broadcastState();
+        return;
+      }
       this.isAnimating=true; this.showTeamResult=false; this.currentGachaTeam=null; this.selectedGachaPos='all';
       setTimeout(()=>{
         const picked = teams[Math.floor(Math.random()*teams.length)];
@@ -1050,6 +1053,8 @@ const app = createApp({
       if(this.onlineMode && !this.isHost) {
         this.sendToHost({type:'reroll', count:this.rerollCount-1});
         this.rerollCount--;
+        this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=true;
+        setTimeout(()=>{ this.isAnimating=false; }, 2000);
         return;
       }
       this.rerollCount--; this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false; this.selectedGachaPos='all';
@@ -1367,9 +1372,7 @@ const app = createApp({
       }
       if(data.type==='gacha') {
         this.selectedContinent = data.continent;
-        this.rerollCount = data.rerollCount || 3;
         this.gacha();
-        setTimeout(()=> this.broadcastState(), 2100);
       }
       if(data.type==='reroll') {
         this.rerollCount = data.count;
