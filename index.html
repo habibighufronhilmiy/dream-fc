@@ -326,14 +326,21 @@
           </div>
         </div>
 
+        <!-- Squad full notification -->
+        <div v-if="currentSquadLength===formationTotalSlots" class="text-center p-3 bg-green-900/30 rounded-xl border border-green-500/30 mb-3">
+          <div class="text-lg font-bold text-green-400">&#10003; Skuad Lengkap!</div>
+          <p class="text-sm text-gray-400">Total: &euro;{{ formatNumber(squadTotalCost) }}M | Sisa: &euro;{{ formatNumber(remainingBudget) }}M</p>
+          <button @click="nextPlayer" class="mt-3 btn-gacha text-sm py-2 px-6">&#9654; Giliran Pemain Berikutnya</button>
+        </div>
+
         <!-- Gacha initial state -->
-        <div v-if="!showTeamResult && !isAnimating" class="text-center py-8">
-          <p class="text-gray-400 mb-4">Pilih filter benua lalu klik Gacha!</p>
+        <div v-if="!showTeamResult && !isAnimating && currentSquadLength<formationTotalSlots" class="text-center py-8">
+          <p class="text-gray-400 mb-4">Pilih filter benua lalu klik Gacha untuk mendapat 1 pemain!</p>
+          <div class="text-sm text-gray-500 mb-2">Pemain: {{ currentSquadLength }}/{{ formationTotalSlots }} | Re-Roll: {{ rerollCount }}x</div>
           <div class="flex flex-wrap justify-center gap-2 mb-4">
             <span v-for="ct in continentFilters" :key="ct.key" @click="onlineMode && !canInteract ? null : selectedContinent=ct.key" class="filter-chip" :class="{'active':selectedContinent===ct.key, 'opacity-50':onlineMode && !canInteract}">{{ ct.label }}</span>
           </div>
           <button @click="onlineMode && !canInteract ? null : gacha()" class="btn-gacha" :disabled="onlineMode && !canInteract">&#127922; Gacha Tim!</button>
-          <div class="mt-4 text-sm text-gray-500">Re-Roll tersisa: {{ rerollCount }}x | Pemain terpilih: {{ currentSquadLength }}/{{ formationTotalSlots }}</div>
         </div>
 
         <!-- Pack opening animation -->
@@ -391,15 +398,9 @@
                 </div>
               </div>
 
-              <div v-if="currentSquadLength===formationTotalSlots" class="text-center p-3 bg-green-900/30 rounded-xl border border-green-500/30">
-                <div class="text-lg font-bold text-green-400">&#10003; Skuad Lengkap!</div>
-                <p class="text-sm text-gray-400">Total: &euro;{{ formatNumber(squadTotalCost) }}M | Sisa: &euro;{{ formatNumber(remainingBudget) }}M</p>
-                <button @click="nextPlayer" class="mt-3 btn-gacha text-sm py-2 px-6">&#9654; Giliran Pemain Berikutnya</button>
-              </div>
-
               <div class="flex flex-wrap gap-2 mt-2">
-                <button @click="onlineMode && !canInteract ? null : rerollTeam()" :disabled="rerollCount<=0 || currentSquadLength>0 || (onlineMode && !canInteract)" class="btn-reroll text-sm">&#128260; Re-Roll ({{ rerollCount }}x)</button>
-                <button @click="cancelTeam" class="text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg transition" v-if="currentSquadLength===0">&#8592; Kembali</button>
+                <button @click="onlineMode && !canInteract ? null : rerollTeam()" :disabled="rerollCount<=0 || (onlineMode && !canInteract)" class="btn-reroll text-sm">&#128260; Re-Roll ({{ rerollCount }}x)</button>
+                <button @click="cancelTeam" class="text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg transition">&#8592; Kembali</button>
               </div>
             </div>
 
@@ -935,11 +936,11 @@ const app = createApp({
     toggleCustomFormation() { this.customFormationMode=!this.customFormationMode; },
     adjustCustom(pos,delta) {
       const cf = this.customFormation;
-      const limits={df:[1,7],md:[1,7],fw:[1,7]};
-      const [mn,mx]=limits[pos];
-      const nv=cf[pos]+delta;
-      if(nv<mn||nv>mx) return;
-      cf[pos]=nv;
+      const nv = cf[pos] + delta;
+      if(nv < 1 || nv > 8) return;
+      const total = cf.df + cf.md + cf.fw - cf[pos] + nv;
+      if(total > 10) return;
+      cf[pos] = nv;
     },
     getPlayerInSlot(pos,slotIndex) {
       const sq = this.squads[this.currentPlayerIndex]||[];
@@ -969,8 +970,9 @@ const app = createApp({
     },
     gacha() {
       if(this.isAnimating) return;
+      this.rerollCount = 3;
       if(this.onlineMode && !this.isHost) {
-        this.sendToHost({type:'gacha', continent:this.selectedContinent});
+        this.sendToHost({type:'gacha', continent:this.selectedContinent, rerollCount:this.rerollCount});
         this.isAnimating=true;
         setTimeout(()=>{ this.isAnimating=false; }, 2000);
         return;
@@ -992,9 +994,10 @@ const app = createApp({
       }, 2000);
     },
     rerollTeam() {
-      if(this.rerollCount<=0 || this.currentSquadLength>0) return;
+      if(this.rerollCount<=0) return;
       if(this.onlineMode && !this.isHost) {
-        this.sendToHost({type:'reroll', count:this.rerollCount});
+        this.sendToHost({type:'reroll', count:this.rerollCount-1});
+        this.rerollCount--;
         return;
       }
       this.rerollCount--; this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false;
@@ -1050,6 +1053,12 @@ const app = createApp({
       if(this.isPlayerLocked(player)||this.isPlayerDrafted(player)||!this.isPositionAvailable(player.position)) return;
       if(this.onlineMode && !this.isHost) {
         this.sendToHost({type:'draft', player:{...player}, playerIndex:this.currentPlayerIndex});
+        // optimistic local update
+        const sq = [...(this.squads[this.currentPlayerIndex]||[])];
+        if(sq.length<this.formationTotalSlots) sq.push({...player});
+        this.squads[this.currentPlayerIndex]=sq;
+        this.showTeamResult = false;
+        this.currentGachaTeam = null;
         return;
       }
       const sq = [...(this.squads[this.currentPlayerIndex]||[])];
@@ -1058,6 +1067,8 @@ const app = createApp({
       this.squads[this.currentPlayerIndex]=sq;
       this.saveToStorage();
       if(this.onlineMode && this.isHost) this.broadcastState();
+      this.showTeamResult = false;
+      this.currentGachaTeam = null;
     },
     nextPlayer() {
       if(this.onlineMode && !this.isHost) {
@@ -1297,17 +1308,20 @@ const app = createApp({
         const pi = data.playerIndex;
         if(!this.squads[pi]) this.squads[pi]=[];
         this.squads[pi].push(data.player);
+        this.showTeamResult = false;
+        this.currentGachaTeam = null;
         this.broadcastState();
       }
       if(data.type==='gacha') {
         this.selectedContinent = data.continent;
+        this.rerollCount = data.rerollCount || 3;
         this.gacha();
         setTimeout(()=> this.broadcastState(), 2100);
       }
       if(data.type==='reroll') {
         this.rerollCount = data.count;
-        this.rerollTeam();
-        this.broadcastState();
+        this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false;
+        this.gacha();
       }
       if(data.type==='next-player') {
         this.nextPlayer();
