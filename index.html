@@ -1443,7 +1443,8 @@ const app = createApp({
     standings:{handler(){this.saveToStorage();},deep:true}
   },
   mounted(){
-    if(!this.loadFromStorage()){this.currentState='setup';}
+    localStorage.removeItem('dreamDraftFC');
+    this.currentState='setup';
     window.addEventListener('beforeunload', ()=>{
       if(this.peer) { try{this.peer.destroy();}catch(e){} }
       this.conns.forEach(c=>{try{c.close();}catch(e){}});
