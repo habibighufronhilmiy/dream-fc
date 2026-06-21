@@ -1,0 +1,10 @@
+{
+  "name": "Dream Draft FC",
+  "short_name": "Dream FC",
+  "description": "Gacha & Draft Turnamen Sepak Bola Lintas Era",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0a0a1a",
+  "theme_color": "#0a0a1a",
+  "orientation": "portrait"
+}
