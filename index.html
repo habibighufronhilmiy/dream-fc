@@ -421,28 +421,28 @@
                 <div class="text-center text-white text-xs font-bold mb-1">{{ formationLabel }}</div>
                 <div class="flex-1 flex flex-col gap-0.5">
                   <div class="flex-1 flex items-end justify-center gap-1 pb-0.5">
-                    <div v-for="slot in currentFormation.fw" :key="'fw'+slot" class="player-slot" :class="{'selected':isSelectedSlot('FW',slot-1), 'filled':getPlayerInSlot('FW',slot-1), 'drag-over':dragOverSlot==='FW'+(slot-1)}" :style="{width: Math.min(90/currentFormation.fw,30)+'%'}" @click="selectGachaPos('FW')" draggable="true" @dragstart="startDrag('FW',slot-1)" @dragover.prevent="dragOverSlot='FW'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('FW',slot-1)">
+                    <div v-for="slot in currentFormation.fw" :key="'fw'+slot" class="player-slot" :class="{'selected':isSelectedSlot('FW',slot-1), 'filled':getPlayerInSlot('FW',slot-1), 'drag-over':dragOverSlot==='FW'+(slot-1)}" :style="{width: Math.min(90/currentFormation.fw,30)+'%'}" @click="selectSlot('FW',slot-1)" draggable="true" @dragstart="startDrag('FW',slot-1)" @dragover.prevent="dragOverSlot='FW'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('FW',slot-1)">
                       <div v-if="getPlayerInSlot('FW',slot-1)" class="text-green-300 font-bold text-[10px] leading-tight truncate w-full">{{ getPlayerInSlot('FW',slot-1).name }}</div>
                       <div v-else class="text-gray-600 text-[9px]">FW</div>
                       <div v-if="getPlayerInSlot('FW',slot-1)" class="pos-badge mt-0.5">{{ getPlayerInSlot('FW',slot-1).rating }}</div>
                     </div>
                   </div>
                   <div class="flex-1 flex items-center justify-center gap-1">
-                    <div v-for="slot in currentFormation.md" :key="'md'+slot" class="player-slot" :class="{'selected':isSelectedSlot('MD',slot-1), 'filled':getPlayerInSlot('MD',slot-1), 'drag-over':dragOverSlot==='MD'+(slot-1)}" :style="{width: Math.min(90/currentFormation.md,30)+'%'}" @click="selectGachaPos('MD')" draggable="true" @dragstart="startDrag('MD',slot-1)" @dragover.prevent="dragOverSlot='MD'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('MD',slot-1)">
+                    <div v-for="slot in currentFormation.md" :key="'md'+slot" class="player-slot" :class="{'selected':isSelectedSlot('MD',slot-1), 'filled':getPlayerInSlot('MD',slot-1), 'drag-over':dragOverSlot==='MD'+(slot-1)}" :style="{width: Math.min(90/currentFormation.md,30)+'%'}" @click="selectSlot('MD',slot-1)" draggable="true" @dragstart="startDrag('MD',slot-1)" @dragover.prevent="dragOverSlot='MD'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('MD',slot-1)">
                       <div v-if="getPlayerInSlot('MD',slot-1)" class="text-cyan-300 font-bold text-[10px] leading-tight truncate w-full">{{ getPlayerInSlot('MD',slot-1).name }}</div>
                       <div v-else class="text-gray-600 text-[9px]">MD</div>
                       <div v-if="getPlayerInSlot('MD',slot-1)" class="pos-badge mt-0.5">{{ getPlayerInSlot('MD',slot-1).rating }}</div>
                     </div>
                   </div>
                   <div class="flex-1 flex items-start justify-center gap-1 pb-0.5">
-                    <div v-for="slot in currentFormation.df" :key="'df'+slot" class="player-slot" :class="{'selected':isSelectedSlot('DF',slot-1), 'filled':getPlayerInSlot('DF',slot-1), 'drag-over':dragOverSlot==='DF'+(slot-1)}" :style="{width: Math.min(90/currentFormation.df,24)+'%'}" @click="selectGachaPos('DF')" draggable="true" @dragstart="startDrag('DF',slot-1)" @dragover.prevent="dragOverSlot='DF'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('DF',slot-1)">
+                    <div v-for="slot in currentFormation.df" :key="'df'+slot" class="player-slot" :class="{'selected':isSelectedSlot('DF',slot-1), 'filled':getPlayerInSlot('DF',slot-1), 'drag-over':dragOverSlot==='DF'+(slot-1)}" :style="{width: Math.min(90/currentFormation.df,24)+'%'}" @click="selectSlot('DF',slot-1)" draggable="true" @dragstart="startDrag('DF',slot-1)" @dragover.prevent="dragOverSlot='DF'+(slot-1)" @dragleave="dragOverSlot=null" @drop="dropPlayer('DF',slot-1)">
                       <div v-if="getPlayerInSlot('DF',slot-1)" class="text-orange-300 font-bold text-[10px] leading-tight truncate w-full">{{ getPlayerInSlot('DF',slot-1).name }}</div>
                       <div v-else class="text-gray-600 text-[9px]">DF</div>
                       <div v-if="getPlayerInSlot('DF',slot-1)" class="pos-badge mt-0.5">{{ getPlayerInSlot('DF',slot-1).rating }}</div>
                     </div>
                   </div>
                   <div class="flex justify-center">
-                    <div class="player-slot w-[30%]" :class="{'selected':isSelectedSlot('GK',0), 'filled':getPlayerInSlot('GK',0)}" @click="selectGachaPos('GK')">
+                    <div class="player-slot w-[30%]" :class="{'selected':isSelectedSlot('GK',0), 'filled':getPlayerInSlot('GK',0)}" @click="selectSlot('GK',0)">
                       <div v-if="getPlayerInSlot('GK',0)" class="text-yellow-300 font-bold text-[10px] leading-tight truncate w-full">{{ getPlayerInSlot('GK',0).name }}</div>
                       <div v-else class="text-gray-600 text-[9px]">GK</div>
                       <div v-if="getPlayerInSlot('GK',0)" class="pos-badge mt-0.5">{{ getPlayerInSlot('GK',0).rating }}</div>
@@ -457,7 +457,7 @@
                 <span class="text-green-400">{{ positionCount('FW') }}/{{ currentFormation.fw }} FW</span>
               </div>
               <div v-if="selectedGachaPos!=='all'" class="mt-1 text-center">
-                <button @click="selectedGachaPos='all'" class="text-xs text-gray-400 hover:text-white underline">&#10005; Batal pilih posisi</button>
+                <button @click="selectedGachaPos='all'; selectedSlot=null" class="text-xs text-gray-400 hover:text-white underline">&#10005; Batal pilih posisi</button>
               </div>
             </div>
           </div>
@@ -770,6 +770,7 @@ const app = createApp({
       myPlayerIndex: -1,
       isConnected: false,
       localPeerId: '',
+      selectedSlot: null,
     };
   },
   computed: {
@@ -957,9 +958,18 @@ const app = createApp({
       this.selectedGachaPos = pos;
     },
     isSelectedSlot(pos, index) {
-      return this.selectedGachaPos === pos;
+      return this.selectedSlot?.pos === pos && this.selectedSlot?.index === index;
     },
-    startDrag(pos, index) {
+    selectSlot(pos, index) {
+      if(this.onlineMode && !this.canInteract) return;
+      if(this.selectedSlot?.pos === pos && this.selectedSlot?.index === index) {
+        this.selectedSlot = null;
+        this.selectedGachaPos = 'all';
+        return;
+      }
+      this.selectedSlot = { pos, index };
+      this.selectedGachaPos = pos;
+    },
       const player = this.getPlayerInSlot(pos, index);
       if(!player) return;
       this.draggedSlot = {pos, index};
@@ -1026,6 +1036,7 @@ const app = createApp({
       }
     },
     gacha(isReroll) {
+      this.selectedSlot = null;
       if(this.isAnimating) return;
       if(!isReroll) this.rerollCount = 3;
       if(this.onlineMode && !this.isHost) {
@@ -1063,11 +1074,11 @@ const app = createApp({
         setTimeout(()=>{ this.isAnimating=false; }, 2000);
         return;
       }
-      this.rerollCount--; this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false; this.selectedGachaPos='all';
+      this.rerollCount--; this.showTeamResult=false; this.currentGachaTeam=null; this.isAnimating=false; this.selectedGachaPos='all'; this.selectedSlot=null;
       if(this.onlineMode && this.isHost) this.broadcastState();
       this.gacha(true);
     },
-    cancelTeam() { this.showTeamResult=false; this.currentGachaTeam=null; this.selectedGachaPos='all'; },
+    cancelTeam() { this.showTeamResult=false; this.currentGachaTeam=null; this.selectedGachaPos='all'; this.selectedSlot=null; },
     openPlayerDetail(player) { this.selectedPlayer=player; this.showPlayerDetail=true; },
     closePlayerDetail() { this.selectedPlayer=null; this.showPlayerDetail=false; },
     getPlayerStat(key) {
@@ -1115,26 +1126,44 @@ const app = createApp({
     },
     isPlayerDrafted(player) { return (this.squads[this.currentPlayerIndex]||[]).some(p=>p.id===player.id); },
     draftPlayer(player) {
-      if(this.isPlayerLocked(player)||this.isPlayerDrafted(player)||!this.isPositionAvailable(player.position)) return;
+      if(this.isPlayerLocked(player)||this.isPlayerDrafted(player)) return;
+      const sq = [...(this.squads[this.currentPlayerIndex]||[])];
+      let replacing = false;
+      if(this.selectedSlot && this.selectedSlot.pos === player.position) {
+        const { pos, index: slotIdx } = this.selectedSlot;
+        const posPlayers = sq.filter(p => p.position === pos);
+        if(slotIdx < posPlayers.length) replacing = true;
+      }
+      if(!replacing && (!this.isPositionAvailable(player.position) || sq.length>=this.formationTotalSlots)) return;
       if(this.onlineMode && !this.isHost) {
         this.sendToHost({type:'draft', player:{...player}, playerIndex:this.currentPlayerIndex});
-        const sq = [...(this.squads[this.currentPlayerIndex]||[])];
-        if(sq.length<this.formationTotalSlots) sq.push({...player});
+        this.placeInSquad(sq, player, replacing);
         this.squads[this.currentPlayerIndex]=sq;
         this.showTeamResult = false;
         this.currentGachaTeam = null;
         this.selectedGachaPos = 'all';
+        this.selectedSlot = null;
         return;
       }
-      const sq = [...(this.squads[this.currentPlayerIndex]||[])];
-      if(sq.length>=this.formationTotalSlots) return;
-      sq.push({...player});
+      this.placeInSquad(sq, player, replacing);
       this.squads[this.currentPlayerIndex]=sq;
       this.saveToStorage();
       if(this.onlineMode && this.isHost) this.broadcastState();
       this.showTeamResult = false;
       this.currentGachaTeam = null;
       this.selectedGachaPos = 'all';
+      this.selectedSlot = null;
+    },
+    placeInSquad(sq, player, replacing) {
+      if(replacing) {
+        const { pos, index: slotIdx } = this.selectedSlot;
+        const posPlayers = sq.filter(p => p.position === pos);
+        const oldIdx = sq.findIndex(p => p.id === posPlayers[slotIdx]?.id);
+        if(oldIdx>=0) sq[oldIdx] = {...player};
+        else sq.push({...player});
+      } else {
+        sq.push({...player});
+      }
     },
     nextPlayer() {
       if(this.onlineMode && !this.isHost) {
@@ -1145,7 +1174,7 @@ const app = createApp({
       if(next<this.playerNames.length) {
         this.currentPlayerIndex=next; this.rerollCount=3;
         this.currentGachaTeam=null; this.showTeamResult=false; this.isAnimating=false;
-        this.searchQuery=''; this.sortBy='default'; this.selectedGachaPos='all'; this.saveToStorage();
+        this.searchQuery=''; this.sortBy='default'; this.selectedGachaPos='all'; this.selectedSlot=null; this.saveToStorage();
       } else { this.currentState='tournament'; this.saveToStorage(); }
       if(this.onlineMode && this.isHost) this.broadcastState();
     },
@@ -1311,7 +1340,7 @@ const app = createApp({
       localStorage.removeItem('dreamDraftFC');
       if(this.peer) { try{this.peer.destroy();}catch(e){} }
       this.conns.forEach(c=>{try{c.close();}catch(e){}});
-      this.playerNames=['','','',''];this.tournamentMode='liga';this.budgetLimit='unlimited';this.currentPlayerIndex=0;this.squads={};this.currentGachaTeam=null;this.rerollCount=3;this.isAnimating=false;this.showTeamResult=false;this.fixtures=[];this.standings=[];this.matchResults=[];this.currentMatchIndex=0;this.fixturesGenerated=false;this.isSimulating=false;this.commentary=[];this.allMatchesPlayed=false;this.championIndex=-1;this.matchLogs=[];this.gachaHistory={};this.selectedContinent='all';this.customFormationMode=false;this.selectedFormation='4-3-3';this.playerStats={};this.searchQuery='';this.sortBy='default';this.selectedPlayer=null;this.showPlayerDetail=false;this.groupCount=2;this.onlineMode=false;this.isHost=false;this.roomCode='';this.joinCode='';this.peer=null;this.conns=[];this.myPlayerIndex=-1;this.isConnected=false;this.localPeerId='';this.currentState='setup';
+      this.playerNames=['','','',''];this.tournamentMode='liga';this.budgetLimit='unlimited';this.currentPlayerIndex=0;this.squads={};this.currentGachaTeam=null;this.rerollCount=3;this.isAnimating=false;this.showTeamResult=false;this.fixtures=[];this.standings=[];this.matchResults=[];this.currentMatchIndex=0;this.fixturesGenerated=false;this.isSimulating=false;this.commentary=[];this.allMatchesPlayed=false;this.championIndex=-1;this.matchLogs=[];this.gachaHistory={};this.selectedContinent='all';this.customFormationMode=false;this.selectedFormation='4-3-3';this.playerStats={};this.searchQuery='';this.sortBy='default';this.selectedPlayer=null;this.showPlayerDetail=false;this.groupCount=2;this.onlineMode=false;this.isHost=false;this.roomCode='';this.joinCode='';this.peer=null;this.conns=[];this.myPlayerIndex=-1;this.isConnected=false;this.localPeerId='';this.selectedSlot=null;this.currentState='setup';
     },
     saveToStorage(){
       localStorage.setItem('dreamDraftFC',JSON.stringify({
