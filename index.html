@@ -345,7 +345,7 @@
           <p class="text-gray-400 mb-4">Pilih filter benua lalu klik Gacha untuk mendapat 1 pemain!</p>
           <div class="text-sm text-gray-500 mb-2">Pemain: {{ currentSquadLength }}/{{ formationTotalSlots }} | Re-Roll: {{ rerollCount }}x</div>
           <div class="flex flex-wrap justify-center gap-2 mb-4">
-            <span v-for="ct in continentFilters" :key="ct.key" @click="onlineMode && !canInteract ? null : selectedContinent=ct.key" class="filter-chip" :class="{'active':selectedContinent===ct.key, 'opacity-50':onlineMode && !canInteract}">{{ ct.label }}</span>
+            <span v-for="ct in continentFilters" :key="ct.key" @click.stop="onlineMode && !canInteract ? null : selectedContinent=ct.key" class="filter-chip" :class="{'active':selectedContinent===ct.key, 'opacity-50':onlineMode && !canInteract}">{{ ct.label }}</span>
           </div>
           <button @click="onlineMode && !canInteract ? null : gacha()" class="btn-gacha" :disabled="onlineMode && !canInteract">&#127922; Gacha Tim!</button>
         </div>
@@ -402,7 +402,7 @@
                       <span class="text-yellow-400">{{ player.rating }}</span>
                       <span class="text-gray-400 ml-auto">&euro;{{ player.marketValue }}M</span>
                     </div>
-                    <button @click="onlineMode && !canInteract ? null : draftPlayer(player)" :disabled="isPlayerLocked(player) || isPlayerDrafted(player) || !isPositionAvailable(player.position) || (onlineMode && !canInteract)" class="mt-1 w-full text-xs py-1 px-2 rounded" :class="isPlayerLocked(player)?'bg-red-600/50 text-red-300 cursor-not-allowed':(isPlayerDrafted(player)?'bg-green-700/50 text-green-300 cursor-not-allowed':(!isPositionAvailable(player.position)?'bg-gray-700/50 text-gray-500 cursor-not-allowed':'btn-select'))">
+                    <button @click.stop="onlineMode && !canInteract ? null : draftPlayer(player)" :disabled="isPlayerLocked(player) || isPlayerDrafted(player) || !isPositionAvailable(player.position) || (onlineMode && !canInteract)" class="mt-1 w-full text-xs py-1 px-2 rounded" :class="isPlayerLocked(player)?'bg-red-600/50 text-red-300 cursor-not-allowed':(isPlayerDrafted(player)?'bg-green-700/50 text-green-300 cursor-not-allowed':(!isPositionAvailable(player.position)?'bg-gray-700/50 text-gray-500 cursor-not-allowed':'btn-select'))">
                       {{ isPlayerDrafted(player)?'&#10003; Terpilih':(isPlayerLocked(player)?'&#128274; Mahal':(!isPositionAvailable(player.position)?'&#128196; Penuh':'Pilih '+player.position)) }}
                     </button>
                   </div>
