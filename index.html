@@ -1360,21 +1360,29 @@ const app = createApp({
       this.onlineMode = true;
       this.isHost = true;
       this.myPlayerIndex = 0;
-      this.peer = new Peer(code);
+      this.peer = new Peer(code, {reliable:true});
       this.peer.on('open', (id)=>{
         this.isConnected = true;
         this.localPeerId = id;
+        this._startPing();
       });
       this.peer.on('error', (err)=>{
         console.error('Peer error:', err);
       });
       this.peer.on('disconnected', ()=>{
         this.isConnected = false;
+        this.peer.reconnect();
       });
       this.peer.on('connection', (conn)=>{
+        conn.serialization = 'json';
         this.conns.push(conn);
         conn.on('data', (data)=> this.handleHostMessage(data, conn));
         conn.on('close', ()=>{
+          this.conns = this.conns.filter(c=>c!==conn);
+          if(this.isHost) this.broadcastState();
+        });
+        conn.on('error', (err)=>{
+          console.error('Host conn error:', err);
           this.conns = this.conns.filter(c=>c!==conn);
           if(this.isHost) this.broadcastState();
         });
@@ -1392,10 +1400,12 @@ const app = createApp({
       });
       this.peer.on('disconnected', ()=>{
         this.isConnected = false;
+        this.peer.reconnect();
       });
       this.peer.on('open', (id)=>{
         this.localPeerId = id;
         const conn = this.peer.connect(code, {reliable:true});
+        conn.serialization = 'json';
         conn.on('open', ()=>{
           this.isConnected = true;
           this.conns = [conn];
@@ -1434,6 +1444,9 @@ const app = createApp({
         this.nextPlayer();
         this.broadcastState();
       }
+      if(data.type==='pong') {
+        // keep-alive received
+      }
     },
     handleJoinerMessage(data) {
       if(data.type==='assigned') {
@@ -1441,6 +1454,9 @@ const app = createApp({
       }
       if(data.type==='state') {
         this.applyRemoteState(data.state);
+      }
+      if(data.type==='ping') {
+        for(const conn of this.conns) { try{conn.send({type:'pong'});}catch(e){} }
       }
     },
     broadcastState() {
@@ -1492,6 +1508,18 @@ const app = createApp({
     },
     sendToHost(data) {
       for(const conn of this.conns) { try{conn.send(data);}catch(e){} }
+    },
+    _startPing() {
+      setInterval(()=>{
+        if(!this.isConnected) return;
+        for(const conn of this.conns) {
+          try {
+            if(conn.open) conn.send({type:'ping'});
+          } catch(e) {
+            this.conns = this.conns.filter(c=>c!==conn);
+          }
+        }
+      }, 15000);
     },
   },
   watch: {
