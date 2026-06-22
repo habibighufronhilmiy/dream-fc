@@ -273,8 +273,8 @@
               <option value="100">&euro;100M</option>
             </select>
           </div>
-          <button @click="startTournament" :disabled="!canStart || (onlineMode && !isHost)" class="w-full py-3 rounded-xl font-bold text-lg transition-all" :class="(canStart && (!onlineMode || isHost)) ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:scale-[1.02]' : 'bg-gray-700 text-gray-500 cursor-not-allowed'">
-            {{ onlineMode ? (isHost ? '&#9654; Mulai Turnamen' : 'Menunggu Host...') : '&#9654; Mulai Turnamen' }}
+          <button @click="startTournament" :disabled="!canStart || (onlineMode && !isHost) || (onlineMode && isHost && (!isConnected || conns.length===0))" class="w-full py-3 rounded-xl font-bold text-lg transition-all" :class="(canStart && (!onlineMode || (isHost && isConnected && conns.length>0))) ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:scale-[1.02]' : 'bg-gray-700 text-gray-500 cursor-not-allowed'">
+            {{ onlineMode ? (isHost ? (isConnected && conns.length>0 ? '&#9654; Mulai Turnamen' : 'Menunggu Pemain...') : 'Menunggu Host...') : '&#9654; Mulai Turnamen' }}
           </button>
           <div v-if="!onlineMode && savedDataExists" class="mt-4 text-center">
             <button @click="loadSavedData" class="text-sm text-cyan-400 hover:text-cyan-300 underline">Lanjutkan Turnamen Tersimpan</button>
@@ -1365,6 +1365,12 @@ const app = createApp({
         this.isConnected = true;
         this.localPeerId = id;
       });
+      this.peer.on('error', (err)=>{
+        console.error('Peer error:', err);
+      });
+      this.peer.on('disconnected', ()=>{
+        this.isConnected = false;
+      });
       this.peer.on('connection', (conn)=>{
         this.conns.push(conn);
         conn.on('data', (data)=> this.handleHostMessage(data, conn));
@@ -1381,6 +1387,12 @@ const app = createApp({
       this.onlineMode = true;
       this.isHost = false;
       this.peer = new Peer();
+      this.peer.on('error', (err)=>{
+        console.error('Peer error:', err);
+      });
+      this.peer.on('disconnected', ()=>{
+        this.isConnected = false;
+      });
       this.peer.on('open', (id)=>{
         this.localPeerId = id;
         const conn = this.peer.connect(code, {reliable:true});
@@ -1391,6 +1403,7 @@ const app = createApp({
         });
         conn.on('data', (data)=> this.handleJoinerMessage(data));
         conn.on('close', ()=>{ this.isConnected = false; });
+        conn.on('error', (err)=>{ console.error('Conn error:', err); });
       });
     },
     handleHostMessage(data, conn) {
