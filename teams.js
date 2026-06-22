@@ -252,7 +252,7 @@
               {id:'mil25_10',name:'D. Calabria',position:'DF',rating:82}
             ]},
             "Napoli 2025": {era:"Modern (2000-2026)",league:"Serie A",players:[
-              {id:'nap25_0',name:'K. De Bruyne',position:'MD',rating:87},
+              {id:'nap25_0',name:'K. Kvaratskhelia',position:'FW',rating:87},
               {id:'nap25_1',name:'S. McTominay',position:'MD',rating:85},
               {id:'nap25_2',name:'A. Meret',position:'GK',rating:83},
               {id:'nap25_3',name:'G. Di Lorenzo',position:'DF',rating:84},
@@ -479,7 +479,7 @@
               {id:'nap26_3',name:'M. Olivera',position:'DF',rating:80},
               {id:'nap26_4',name:'S. McTominay',position:'MD',rating:85},
               {id:'nap26_5',name:'S. Lobotka',position:'MD',rating:84},
-              {id:'nap26_6',name:'K. De Bruyne',position:'MD',rating:87},
+              {id:'nap26_6',name:'A. Anguissa',position:'MD',rating:84},
               {id:'nap26_7',name:'M. Politano',position:'FW',rating:82},
               {id:'nap26_8',name:'R. Lukaku',position:'FW',rating:84},
               {id:'nap26_9',name:'G. Raspadori',position:'FW',rating:82},
